@@ -5,13 +5,13 @@ REST API de autenticação completa com JWT, construída do zero com Spring Boot
 ## 🚀 Tecnologias
 
 - Java 25
-- Spring Boot 3.5
-- Spring Security 6
+- Spring Boot 3.5.15
+- Spring Security 6.5
 - JWT (JJWT 0.12.6)
 - PostgreSQL 17
-- Flyway (migrations)
+- Flyway 11.7
 - Lombok
-- Gradle
+- Gradle 8.14
 
 ## ✨ Funcionalidades
 
@@ -22,6 +22,7 @@ REST API de autenticação completa com JWT, construída do zero com Spring Boot
 - ✅ Endpoint protegido com autenticação JWT
 - ✅ Validação de dados com Bean Validation
 - ✅ Tratamento global de exceções
+- ✅ Migrations de banco com Flyway
 
 ## 📋 Endpoints
 
@@ -45,13 +46,37 @@ src/
 
 ├── dto/            # Records de request/response
 
-├── filter/         # Filtro JWT
+├── filter/         # Filtro JWT (JwtAuthFilter)
 
 ├── repository/     # Repositórios JPA
 
-├── service/        # Regras de negócio e JWT
+├── service/        # Regras de negócio e serviço JWT
 
 └── exception/      # Handler global de exceções
+
+## 🗄️ Banco de dados
+
+```sql
+users
+├── id (UUID)
+├── name
+├── email (unique)
+├── password (BCrypt)
+├── role
+└── created_at
+
+refresh_tokens
+├── id (UUID)
+├── token
+├── user_id (FK)
+├── expires_at
+└── created_at
+
+token_blacklist
+├── id (UUID)
+├── token
+└── created_at
+```
 
 ## ⚙️ Como rodar
 
@@ -94,6 +119,7 @@ spring:
 - Refresh Token com expiração de 7 dias
 - Blacklist de tokens para logout seguro
 - Sessão stateless (sem estado no servidor)
+- Filtro JWT aplicado em todas as requisições protegidas
 
 ## 📝 Exemplos de uso
 
@@ -115,6 +141,14 @@ curl -X POST http://localhost:8080/auth/login \
 ```bash
 curl -X GET http://localhost:8080/api/me \
   -H "Authorization: Bearer {seu_token}"
+```
+
+### Resposta de autenticação
+```json
+{
+  "accessToken": "eyJhbGciOiJIUzUxMiJ9...",
+  "refreshToken": "eyJhbGciOiJIUzUxMiJ9..."
+}
 ```
 
 ---
